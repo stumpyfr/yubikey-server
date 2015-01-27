@@ -103,7 +103,7 @@ func reply(w http.ResponseWriter, otp, nonce, status, id string, dal *Dal) {
 	w.Write([]byte(ret))
 }
 
-func runAPI(dal *Dal) {
+func runAPI(dal *Dal, port string) {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/wsapi/2.0/verify", func(w http.ResponseWriter, r *http.Request) {
@@ -111,6 +111,6 @@ func runAPI(dal *Dal) {
 	}).Methods("GET")
 
 	http.Handle("/", r)
-	log.Println("Listening on port 3000...")
-	http.ListenAndServe(":3000", nil)
+	log.Println("Listening on port " + port + "...")
+	http.ListenAndServe(":"+port, nil)
 }

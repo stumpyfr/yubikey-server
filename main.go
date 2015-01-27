@@ -12,6 +12,7 @@ func main() {
 	pub := flag.String("pub", "", "public identity")
 	secret := flag.String("secret", "", "secret key")
 	app := flag.String("app", "", "application name")
+	port := flag.String("p", "4242", "server port")
 	flag.Parse()
 
 	dal, err := newDAL()
@@ -20,7 +21,7 @@ func main() {
 	}
 
 	if *serverMode {
-		runAPI(dal)
+		runAPI(dal, *port)
 	} else {
 		if *app != "" {
 			app, err := dal.CreateApp(&App{Name: *app, Key: time.Now().Format(time.RFC3339Nano)})

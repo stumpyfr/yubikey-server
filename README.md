@@ -20,7 +20,7 @@ I followed the [yubikey protocol in version 2.0](https://code.google.com/p/yubik
 # How to query the server
 Get http call:
 
-    http://<server ip>:<server port>/wsapi/2.0/verify?otp=<your otp>&id=<app id>
+    http://<server ip>:<server port>/wsapi/2.0/verify?otp=<your otp>&id=<app id>&nonce=test42
 
 Will return: 
 
