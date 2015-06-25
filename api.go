@@ -79,7 +79,7 @@ func reply(w http.ResponseWriter, otp, nonce, status, id string, dal *Dal) {
 	err := errors.New("")
 
 	values = append(values, "nonce="+nonce)
-	values = append(values, "opt="+otp)
+	values = append(values, "otp="+otp)
 	if status != MISSING_PARAMETER {
 		key, err = loadKey(id, dal)
 		if err == nil {
