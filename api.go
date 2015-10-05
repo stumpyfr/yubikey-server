@@ -50,32 +50,30 @@ func checkOTP(w http.ResponseWriter, r *http.Request, dal *Dal) {
 	}
 }
 
-func Sign(values []string, key string) string {
+func Sign(values []string, key []byte) []byte {
 	payload := ""
 	for _, v := range values {
 		payload += v + "&"
 	}
 	payload = payload[:len(payload)-1]
 
-	mac := hmac.New(sha1.New, []byte(key))
+	mac := hmac.New(sha1.New, key)
 	mac.Write([]byte(payload))
-	s := mac.Sum(nil)
-
-	return base64.StdEncoding.EncodeToString(s)
+	return mac.Sum(nil)
 }
 
-func loadKey(id string, dal *Dal) (string, error) {
+func loadKey(id string, dal *Dal) ([]byte, error) {
 	i, err := dal.GetApp(id)
 	if err != nil {
-		return "", errors.New(NO_SUCH_CLIENT)
+		return []byte{}, errors.New(NO_SUCH_CLIENT)
 	}
 
-	return *i, nil
+	return i, nil
 }
 
 func reply(w http.ResponseWriter, otp, nonce, status, id string, dal *Dal) {
 	values := []string{}
-	key := ""
+	key := []byte{}
 	err := errors.New("")
 
 	values = append(values, "nonce="+nonce)
@@ -92,7 +90,7 @@ func reply(w http.ResponseWriter, otp, nonce, status, id string, dal *Dal) {
 	}
 	values = append(values, "t="+time.Now().Format(time.RFC3339))
 	if status != MISSING_PARAMETER {
-		values = append(values, "h="+Sign(values, key))
+		values = append(values, "h="+base64.StdEncoding.EncodeToString(Sign(values, key)))
 	}
 
 	ret := ""

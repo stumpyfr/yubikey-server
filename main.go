@@ -1,9 +1,10 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"flag"
 	"fmt"
-	"time"
 )
 
 func main() {
@@ -24,11 +25,17 @@ func main() {
 		runAPI(dal, *port)
 	} else {
 		if *app != "" {
-			app, err := dal.CreateApp(&App{Name: *app, Key: time.Now().Format(time.RFC3339Nano)})
+			randomkey := make([]byte, 256)
+			_, err := rand.Read(randomkey)
 			if err != nil {
-				fmt.Println(err)
+				fmt.Println("error getting random data:", err)
 			} else {
-				fmt.Println("app created, id:", app.Id, "key:", app.Key)
+				app, err := dal.CreateApp(&App{Name: *app, Key: randomkey})
+				if err != nil {
+					fmt.Println(err)
+				} else {
+					fmt.Println("app created, id:", app.Id, "key:", base64.StdEncoding.EncodeToString(app.Key))
+				}
 			}
 		} else {
 			err := dal.CreateKey(&Key{Name: *name, Public: *pub, Secret: *secret})
