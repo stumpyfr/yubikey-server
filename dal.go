@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/base64"
 	"errors"
 	_ "github.com/mattn/go-sqlite3"
 	"time"
@@ -25,7 +26,7 @@ type Key struct {
 type App struct {
 	Id   int
 	Name string
-	Key  string
+	Key  []byte
 }
 
 func newDAL() (*Dal, error) {
@@ -41,6 +42,7 @@ func newDAL() (*Dal, error) {
 }
 
 func (d *Dal) CreateApp(app *App) (*App, error) {
+	// Truncate the key to the length we expect
 	app.Key = Sign([]string{app.Name}, app.Key)
 
 	stmt, err := d.db.Prepare(`insert into apps(name, key, created) values(?, ?, ?)`)
@@ -48,7 +50,7 @@ func (d *Dal) CreateApp(app *App) (*App, error) {
 		return nil, err
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec(app.Name, app.Key, time.Now())
+	_, err = stmt.Exec(app.Name, base64.StdEncoding.EncodeToString(app.Key), time.Now())
 	if err != nil {
 		return nil, err
 	}
@@ -107,18 +109,22 @@ func (d *Dal) UpdateKey(key *Key) error {
 	return nil
 }
 
-func (d *Dal) GetApp(id string) (*string, error) {
+func (d *Dal) GetApp(id string) ([]byte, error) {
 	stmt, err := d.db.Prepare("select key from apps where id = ?")
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
-	key := ""
-	err = stmt.QueryRow(id).Scan(&key)
+	base64key := ""
+	err = stmt.QueryRow(id).Scan(&base64key)
 	if err != nil {
 		return nil, err
 	}
-	return &key, nil
+	key, err := base64.StdEncoding.DecodeString(base64key)
+	if err != nil {
+		return nil, err
+	}
+	return key, nil
 }
 
 func (d *Dal) GetKey(pub string) (*Key, error) {
