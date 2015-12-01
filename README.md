@@ -10,10 +10,16 @@ I followed the [yubikey protocol in version 2.0](https://code.google.com/p/yubik
 
     // to build the server
     $go build 
+    
     // will add a new application and display the id and key
     $./yubikey-server -app "NameOfYourApp"
+    
     // will add a new key in the system
     $./yubikey-server -name "YourName" -pub "publicKey" -secret "AESSecret"
+    
+    // will revoke/delete a key 
+    $./yubikey-server -delete "YourName" 
+    
     // will start the server on the default port 3000
     $./yubikey-server -s
     
