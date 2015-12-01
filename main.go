@@ -10,6 +10,7 @@ import (
 func main() {
 	serverMode := flag.Bool("s", false, "server mode")
 	name := flag.String("name", "", "name")
+	delete := flag.String("delete", "", "key to delete")
 	pub := flag.String("pub", "", "public identity")
 	secret := flag.String("secret", "", "secret key")
 	app := flag.String("app", "", "application name")
@@ -38,11 +39,23 @@ func main() {
 				}
 			}
 		} else {
-			err := dal.CreateKey(&Key{Name: *name, Public: *pub, Secret: *secret})
-			if err != nil {
-				fmt.Println(err)
+			if *delete != "" {
+
+				err := dal.DeleteKey(&Key{Name: *delete})
+				if err != nil {
+					fmt.Println(err)
+				} else {
+					fmt.Println("key deleted: OK")
+				}
+
 			} else {
-				fmt.Println("creation of the key: OK")
+
+				err := dal.CreateKey(&Key{Name: *name, Public: *pub, Secret: *secret})
+				if err != nil {
+					fmt.Println(err)
+				} else {
+					fmt.Println("creation of the key: OK")
+				}
 			}
 		}
 	}
