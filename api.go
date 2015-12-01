@@ -17,26 +17,28 @@ const (
 
 func checkOTP(w http.ResponseWriter, r *http.Request, dal *Dal) {
 	if r.URL.Query()["otp"] == nil || r.URL.Query()["nonce"] == nil || r.URL.Query()["id"] == nil {
-		reply(w, "", "", MISSING_PARAMETER, "", dal)
+		reply(w, "", "", "", MISSING_PARAMETER, "", dal)
 		return
 	}
 	otp := r.URL.Query()["otp"][0]
 	nonce := r.URL.Query()["nonce"][0]
 	id := r.URL.Query()["id"][0]
+	name := ""
+
 	if len(otp) < pubLen {
-		reply(w, otp, nonce, BAD_OTP, id, dal)
+		reply(w, otp, name, nonce, BAD_OTP, id, dal)
 		return
 	}
 	pub := otp[:pubLen]
 
 	k, err := dal.GetKey(pub)
 	if err != nil {
-		reply(w, otp, nonce, BAD_OTP, id, dal)
+		reply(w, otp, name, nonce, BAD_OTP, id, dal)
 		return
 	} else {
 		k, err = Gate(k, otp)
 		if err != nil {
-			reply(w, otp, nonce, err.Error(), id, dal)
+			reply(w, otp, name, nonce, err.Error(), id, dal)
 			return
 		} else {
 			err = dal.UpdateKey(k)
@@ -44,7 +46,9 @@ func checkOTP(w http.ResponseWriter, r *http.Request, dal *Dal) {
 				log.Println("fail to update key counter/session")
 				return
 			}
-			reply(w, otp, nonce, OK, id, dal)
+
+			name := k.Name
+			reply(w, otp, name, nonce, OK, id, dal)
 			return
 		}
 	}
@@ -71,7 +75,7 @@ func loadKey(id string, dal *Dal) ([]byte, error) {
 	return i, nil
 }
 
-func reply(w http.ResponseWriter, otp, nonce, status, id string, dal *Dal) {
+func reply(w http.ResponseWriter, otp, name, nonce, status, id string, dal *Dal) {
 	values := []string{}
 	key := []byte{}
 	err := errors.New("")
@@ -81,6 +85,7 @@ func reply(w http.ResponseWriter, otp, nonce, status, id string, dal *Dal) {
 	if status != MISSING_PARAMETER {
 		key, err = loadKey(id, dal)
 		if err == nil {
+			values = append(values, "name="+name)
 			values = append(values, "status="+status)
 		} else {
 			values = append(values, "status="+err.Error())
