@@ -95,6 +95,26 @@ func (d *Dal) CreateKey(key *Key) error {
 	return nil
 }
 
+func (d *Dal) DeleteKey(key *Key) error {
+	if key.Name == "" {
+		return errors.New("name need to be indicated")
+	} else {
+
+		stmt, err := d.db.Prepare(`delete from keys where name=?`)
+		if err != nil {
+			return err
+		}
+		defer stmt.Close()
+		_, err = stmt.Exec(key.Name)
+		if err != nil {
+			return err
+		}
+		return nil
+
+	}
+	return nil
+}
+
 func (d *Dal) UpdateKey(key *Key) error {
 	stmt, err := d.db.Prepare("update keys set counter = ?, session = ?, used = ?where public = ?")
 	if err != nil {
