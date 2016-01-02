@@ -15,6 +15,7 @@ func main() {
 	secret := flag.String("secret", "", "secret key")
 	app := flag.String("app", "", "application name")
 	port := flag.String("p", "4242", "server port")
+	host := flag.String("host", "127.0.0.1", "server addr")
 	flag.Parse()
 
 	dal, err := newDAL()
@@ -23,7 +24,7 @@ func main() {
 	}
 
 	if *serverMode {
-		runAPI(dal, *port)
+		runAPI(dal, *host, *port)
 	} else {
 		if *app != "" {
 			randomkey := make([]byte, 256)
