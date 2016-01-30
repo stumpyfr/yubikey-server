@@ -29,8 +29,8 @@ type App struct {
 	Key  []byte
 }
 
-func newDAL() (*Dal, error) {
-	d, err := sql.Open("sqlite3", "./database.db")
+func newDAL(dbfile string) (*Dal, error) {
+	d, err := sql.Open("sqlite3", dbfile)
 	if err != nil {
 		return nil, err
 	}
