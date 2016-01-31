@@ -16,9 +16,10 @@ func main() {
 	app := flag.String("app", "", "application name")
 	port := flag.String("p", "4242", "server port")
 	host := flag.String("host", "127.0.0.1", "server addr")
+	db := flag.String("db", "database.db", "database file")
 	flag.Parse()
 
-	dal, err := newDAL()
+	dal, err := newDAL(*db)
 	if err != nil {
 		fmt.Println(err)
 	}
