@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"sort"
 )
 
 const (
@@ -56,6 +57,9 @@ func checkOTP(w http.ResponseWriter, r *http.Request, dal *Dal) {
 
 func Sign(values []string, key []byte) []byte {
 	payload := ""
+        // Alphabetically sort the set of key/value pairs by key order.
+        // ref: https://developers.yubico.com/yubikey-val/Validation_Protocol_V2.0.html
+	sort.Strings(values)
 	for _, v := range values {
 		payload += v + "&"
 	}
