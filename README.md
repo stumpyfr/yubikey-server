@@ -4,7 +4,7 @@ Go implementation of yubikey server to be able to run your own server on network
 
 Store all information inside a sqlite database, need to create other connectors for different backend
 
-I followed the [yubikey protocol in version 2.0](https://code.google.com/p/yubikey-val-server-php/wiki/ValidationProtocolV20) to implement this server
+I followed the [yubikey protocol in version 2.0](https://developers.yubico.com/yubikey-val/Validation_Protocol_V2.0.html) to implement this server
 
 # Usage
 
