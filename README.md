@@ -1,5 +1,7 @@
 # Description
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8a35c3cfc6e14db99369bcbbb887220d)](https://www.codacy.com/app/stumpyfr/yubikey-server?utm_source=github.com&utm_medium=referral&utm_content=stumpyfr/yubikey-server&utm_campaign=badger)
+
 Go implementation of yubikey server to be able to run your own server on network who can't have access to the official servers.
 
 Store all information inside a sqlite database, need to create other connectors for different backend
